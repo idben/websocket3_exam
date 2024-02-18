@@ -1,6 +1,5 @@
-const WebSocket = require("ws");
-
-const wss = new WebSocket.Server({ port: 8080 });
+import WebSocket, { WebSocketServer } from "ws";
+const wss = new WebSocketServer({port: 8080});
 
 // 用於存儲客戶端的使用者列表
 const clients = {};
