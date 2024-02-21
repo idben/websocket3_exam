@@ -201,21 +201,47 @@ wss.on("connection", (connection) => {
       });
     }
   });
-  
 
   connection.on("close", () => {
     console.log("已經用者斷開連線");
     let dsID = connection.userId;
+    let dsRoomID = connection.roomID;
     // 從客戶端列表中移除
-    if (connection.userId) {
-      delete clients[connection.userId];
+    if (dsID) {
+      delete clients[dsID];
     }
+    // 發出斷線通知
     const otherClients = Object.keys(clients);
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: "updateClient", otherClients , disconnectedID: dsID}));
+        client.send(JSON.stringify({ type: "disconnected", otherClients , disconnectedID: dsID}));
       }
     });
+    // 如果有在房間內，要發出離開房間通知
+    if(dsRoomID){
+      rooms[dsRoomID].userList = arrayRemove(rooms[dsRoomID].userList , dsID);
+      let clientList = rooms[dsRoomID].userList;
+      rooms[dsRoomID].userList.forEach(userID=>{
+        const targetClient = clients[dsID];
+        if (targetClient && targetClient.readyState === WebSocket.OPEN) {
+          targetClient.send(JSON.stringify({ type: "leaveRoom", fromID: dsID, roomID: dsRoomID, clientList}));
+        }
+      });
+      if(rooms[dsRoomID].userList.length === 0){
+        delete rooms[dsRoomID];
+      }
+      let allRooms = [];
+      for (const [key, value] of Object.entries(rooms)) {
+        let id = key;
+        let name = value.name;
+        allRooms.push({id, name});
+      }
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: "newRoom", allRooms }));
+        }
+      });
+    }
   });
 });
 
