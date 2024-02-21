@@ -1,5 +1,6 @@
 import WebSocket, { WebSocketServer } from "ws";
-const wss = new WebSocketServer({port: 8080});
+const port = process.env.PORT || 8080;
+const wss = new WebSocketServer({port: port});
 
 // 用於存儲客戶端的使用者列表
 const clients = {};
