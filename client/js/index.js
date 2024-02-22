@@ -30,7 +30,7 @@ document.querySelector("[name=msg]").addEventListener("keydown", (e)=>{
 
 blocks.forEach((block, index)=>{
   block.addEventListener("click", (e)=>{
-    console.log(gameStatus)
+    // console.log(gameStatus)
     if(gameStatus === "canPlay"){
       let prarms = {
         type: "playingGame",
@@ -56,7 +56,7 @@ ws.addEventListener("open", () => {
 });
 
 ws.addEventListener("message", async (event) => {
-  console.log(event)
+  // console.log(event)
   let resutlt = JSON.parse(event.data);
   if(resutlt.type === "startedGame"){
     leftArea.innerHTML += `<div><span class="badge bg-success me-1">system</span>人數已滿，遊戲開始。</div>`;
@@ -240,7 +240,7 @@ function sendMessage() {
     prarms.roomID = roomID;
   }
   ws.send(JSON.stringify(prarms));
-  console.log(prarms)
+  // console.log(prarms)
   document.querySelector("[name=msg]").value = "";
   // if(targetUserId){
   //   let icon1 = `<span class="badge bg-primary d-flex align-itmes-center pt-1 me-1">我自己</span>`
@@ -293,7 +293,7 @@ function setRoomList(){
 }
 
 function setClientList(){
-  console.log(clientList)
+  // console.log(clientList)
   clientDOM = "";
   clientList.forEach((client)=>{
     if(client !== userId){
